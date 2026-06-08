@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         {
             // some operation
         }
-        tokens.push_back("EOF null");
+        tokens.push_back("EOF  null");
         for (int i = 0; i < tokens.size(); i++)
         {
             std::cout << tokens[i] << std::endl;
