@@ -68,15 +68,33 @@ public:
                          "Operands must be two numbers or two strings.");
     }
     case type::GREATER:
-      return std::any_cast<double>(left_val) > std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) >
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::GREATER_EQUAL:
-      return std::any_cast<double>(left_val) >=
-             std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) >=
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::LESS:
-      return std::any_cast<double>(left_val) < std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) <
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::LESS_EQUAL:
-      return std::any_cast<double>(left_val) <=
-             std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) <=
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::BANG_EQUAL:
       return !isEqual(left_val, right_val);
     case type::EQUAL_EQUAL:
