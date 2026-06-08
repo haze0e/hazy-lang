@@ -35,9 +35,19 @@ public:
     case type::MINUS:
       return std::any_cast<double>(left_val) - std::any_cast<double>(right_val);
     case type::SLASH:
-      return std::any_cast<double>(left_val) / std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) /
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::STAR:
-      return std::any_cast<double>(left_val) * std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) *
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::PLUS: {
       if (left_val.type() == typeid(double) &&
           right_val.type() == typeid(double)) {
@@ -49,7 +59,8 @@ public:
         return std::any_cast<std::string>(left_val) +
                std::any_cast<std::string>(right_val);
       }
-      throw RuntimeError(expr.op, "Operands must be two numbers or two strings.");
+      throw RuntimeError(expr.op,
+                         "Operands must be two numbers or two strings.");
     }
     case type::GREATER:
       return std::any_cast<double>(left_val) > std::any_cast<double>(right_val);
