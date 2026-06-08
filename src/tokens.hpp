@@ -55,6 +55,22 @@ std::string inline to_string(type s) {
     return "PLUS";
   case type::SEMICOLON:
     return "SEMICOLON";
+  case type::BANG_EQUAL:
+    return "BANG_EQUAL";
+  case type::EQUAL:
+    return "EQUAL";
+  case type::EQUAL_EQUAL:
+    return "EQUAL_EQUAL";
+  case type::BANG:
+    return "BANG";
+  case type::LESS:
+    return "LESS";
+  case type::LESS_EQUAL:
+    return "LESS_EQUAL";
+  case type::GREATER:
+    return "GREATER";
+  case type::GREATER_EQUAL:
+    return "GREATER_EQUAL";
   default:
     return "UNKNOWN";
   }
