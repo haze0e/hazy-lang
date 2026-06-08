@@ -37,6 +37,10 @@ enum class type {
 
   STRING,
 
+  // number
+
+  NUMBER,
+
 };
 
 std::string inline to_string(type s) {
@@ -83,6 +87,8 @@ std::string inline to_string(type s) {
     return "SLASH";
   case type::STRING:
     return "STRING";
+  case type::NUMBER:
+    return "NUMBER";
   default:
     return "UNKNOWN";
   }
@@ -101,8 +107,9 @@ public:
 
 void inline print_tokens(const std::vector<token> &tokens) {
   for (int i = 0; i < tokens.size(); i++) {
-    std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme << " ";
-    
+    std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme
+              << " ";
+
     if (tokens[i].literal.has_value()) {
       if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
         std::cout << *str_val << std::endl;

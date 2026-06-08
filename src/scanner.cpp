@@ -111,8 +111,27 @@ void Scanner::scan_tokens() {
     }
 
     default:
-      have_error = true;
-      error("Unexpected character: " + std::string(1, source[i]));
+      if (is_digit(source[i])) {
+        int start = i;
+        while (i + 1 < source.length() && is_digit(source[i + 1])) {
+          i++;
+        }
+
+        if (i + 1 < source.length() && source[i + 1] == '.') {
+          if (i + 2 < source.length() && is_digit(source[i + 2])) {
+            i++;
+            while (i + 1 < source.length() && is_digit(source[i + 1])) {
+              i++;
+            }
+          }
+        }
+
+        std::string lexeme = source.substr(start, i - start + 1);
+        make_token(type::NUMBER, lexeme, std::stod(lexeme));
+      } else {
+        have_error = true;
+        error("Unexpected character: " + std::string(1, source[i]));
+      }
       break;
     }
   }

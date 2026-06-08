@@ -14,6 +14,10 @@ private:
     tokens.push_back(token(token_type, lexeme, line, literal));
   }
 
+  bool is_digit(char c) {
+    return c >= '0' && c <= '9';
+  }
+
 public:
   Scanner(std::string source_code) : source(std::move(source_code)) {}
 
