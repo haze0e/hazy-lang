@@ -19,6 +19,7 @@ enum class type {
   MINUS,
   PLUS,
   SEMICOLON,
+  UNKNOWN
 
 };
 
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]) {
   const std::string command = argv[1];
 
   if (command == "tokenize") {
-
+    long long line = 1;
     class token {
     private:
     public:
@@ -117,28 +118,39 @@ int main(int argc, char *argv[]) {
       case ';':
         tokens.push_back(token(type::SEMICOLON, ";"));
         break;
+      case '\n':
+        line++;
       default:
+        tokens.push_back(
+            token(type::UNKNOWN, std::string(file_contents[i], 1)));
         break;
       }
       // some operation
     }
     tokens.push_back(token(type::END_OF_FILE, ""));
     for (int i = 0; i < tokens.size(); i++) {
-      std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme
-                << " ";
-      if (tokens[i].literal.has_value()) {
-        if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
-          std::cout << *str_val << std::endl;
-        } else if (auto double_val =
-                       std::any_cast<double>(&tokens[i].literal)) {
-          std::cout << *double_val << std::endl;
+
+      if (!(tokens[i].token_type == type::UNKNOWN)) {
+        std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme
+                  << " ";
+        if (tokens[i].literal.has_value()) {
+          if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
+            std::cout << *str_val << std::endl;
+          } else if (auto double_val =
+                         std::any_cast<double>(&tokens[i].literal)) {
+            std::cout << *double_val << std::endl;
+          } else {
+            std::cout << "unknown" << std::endl;
+          }
         } else {
-          std::cout << "unknown" << std::endl;
+          std::cout << "null" << std::endl;
         }
+        // some operation
       } else {
-        std::cout << "null" << std::endl;
+        std::cout << "[line " << line
+                  << "] Error: Unexpected character: " << tokens[i].lexeme
+                  << std::endl;
       }
-      // some operation
     }
 
   } else {
