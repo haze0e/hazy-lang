@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "evaluate.hpp"
 #include "scanner.hpp"
 #include "tokens.hpp"
 #include <fstream>
@@ -49,7 +50,8 @@ int main(int argc, char *argv[]) {
     if (parser.has_error()) {
       return 65;
     }
-    std::any result = expr->evaluate();
+    Evaluator evaluator;
+    std::any result = expr->accept(evaluator);
     if (!result.has_value()) {
       std::cout << "nil" << std::endl;
     } else if (result.type() == typeid(double)) {
