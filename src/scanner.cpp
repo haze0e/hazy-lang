@@ -128,13 +128,21 @@ void Scanner::scan_tokens() {
 
         std::string lexeme = source.substr(start, i - start + 1);
         make_token(type::NUMBER, lexeme, std::stod(lexeme));
-      } else if (is_alpha(source[i])) {
+      }
+
+      else if (is_alpha(source[i])) {
         int start = i;
         while (i + 1 < source.length() && is_alphanumeric(source[i + 1])) {
           i++;
         }
         std::string lexeme = source.substr(start, i - start + 1);
-        make_token(type::IDENTIFIER, lexeme);
+
+        auto it = keywords.find(lexeme);
+        if (it != keywords.end()) {
+          make_token(it->second, lexeme);
+        } else {
+          make_token(type::IDENTIFIER, lexeme);
+        }
       } else {
         have_error = true;
         error("Unexpected character: " + std::string(1, source[i]));

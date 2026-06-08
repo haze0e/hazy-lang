@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #pragma once
 
@@ -46,7 +47,33 @@ enum class type {
 
   IDENTIFIER,
 
+  // keywords
+  AND,
+  CLASS,
+  ELSE,
+  FALSE,
+  FOR,
+  FUN,
+  IF,
+  NIL,
+  OR,
+  PRINT,
+  RETURN,
+  SUPER,
+  THIS,
+  TRUE,
+  VAR,
+  WHILE
+
 };
+
+inline std::unordered_map<std::string, type> keywords = {
+    {"and", type::AND},     {"class", type::CLASS},   {"else", type::ELSE},
+    {"false", type::FALSE}, {"for", type::FOR},       {"fun", type::FUN},
+    {"if", type::IF},       {"nil", type::NIL},       {"or", type::OR},
+    {"print", type::PRINT}, {"return", type::RETURN}, {"super", type::SUPER},
+    {"this", type::THIS},   {"true", type::TRUE},     {"var", type::VAR},
+    {"while", type::WHILE}};
 
 std::string inline to_string(type s) {
   switch (s) {
@@ -96,6 +123,38 @@ std::string inline to_string(type s) {
     return "NUMBER";
   case type::IDENTIFIER:
     return "IDENTIFIER";
+  case type::AND:
+    return "AND";
+  case type::CLASS:
+    return "CLASS";
+  case type::ELSE:
+    return "ELSE";
+  case type::FALSE:
+    return "FALSE";
+  case type::FOR:
+    return "FOR";
+  case type::FUN:
+    return "FUN";
+  case type::IF:
+    return "IF";
+  case type::NIL:
+    return "NIL";
+  case type::OR:
+    return "OR";
+  case type::PRINT:
+    return "PRINT";
+  case type::RETURN:
+    return "RETURN";
+  case type::SUPER:
+    return "SUPER";
+  case type::THIS:
+    return "THIS";
+  case type::TRUE:
+    return "TRUE";
+  case type::VAR:
+    return "VAR";
+  case type::WHILE:
+    return "WHILE";
   default:
     return "UNKNOWN";
   }
