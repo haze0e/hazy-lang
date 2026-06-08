@@ -2,6 +2,13 @@
 #include "Expr.hpp"
 #include <stdexcept>
 
+class RuntimeError : public std::runtime_error {
+public:
+  const token op;
+  RuntimeError(const token &op, const std::string &message)
+      : std::runtime_error(message), op(op) {}
+};
+
 class Evaluator : public ExprVisitor {
 public:
   std::any visitBinaryExpr(const Binary &expr) override {
@@ -42,7 +49,7 @@ public:
         return std::any_cast<std::string>(left_val) +
                std::any_cast<std::string>(right_val);
       }
-      throw std::runtime_error("Operands must be two numbers or two strings.");
+      throw RuntimeError(expr.op, "Operands must be two numbers or two strings.");
     }
     case type::GREATER:
       return std::any_cast<double>(left_val) > std::any_cast<double>(right_val);
@@ -75,7 +82,7 @@ public:
     switch (expr.op.token_type) {
     case type::MINUS:
       if (right_val.type() != typeid(double)) {
-        throw std::runtime_error("Operand must be a number.");
+        throw RuntimeError(expr.op, "Operand must be a number.");
       }
       return -std::any_cast<double>(right_val);
     case type::BANG: {

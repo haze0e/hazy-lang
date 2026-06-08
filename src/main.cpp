@@ -51,18 +51,23 @@ int main(int argc, char *argv[]) {
       return 65;
     }
     Evaluator evaluator;
-    std::any result = expr->accept(evaluator);
-    if (!result.has_value()) {
-      std::cout << "nil" << std::endl;
-    } else if (result.type() == typeid(double)) {
-      std::cout << std::any_cast<double>(result) << std::endl;
-    } else if (result.type() == typeid(bool)) {
-      std::cout << (std::any_cast<bool>(result) ? "true" : "false")
-                << std::endl;
-    } else if (result.type() == typeid(std::string)) {
-      std::cout << std::any_cast<std::string>(result) << std::endl;
-    } else {
-      std::cout << "unknown type" << std::endl;
+    try {
+      std::any result = expr->accept(evaluator);
+      if (!result.has_value()) {
+        std::cout << "nil" << std::endl;
+      } else if (result.type() == typeid(double)) {
+        std::cout << std::any_cast<double>(result) << std::endl;
+      } else if (result.type() == typeid(bool)) {
+        std::cout << (std::any_cast<bool>(result) ? "true" : "false")
+                  << std::endl;
+      } else if (result.type() == typeid(std::string)) {
+        std::cout << std::any_cast<std::string>(result) << std::endl;
+      } else {
+        std::cout << "unknown type" << std::endl;
+      }
+    } catch (const RuntimeError &e) {
+      std::cerr << e.what() << "\n[line " << e.op.line << "]" << std::endl;
+      return 70;
     }
   } else {
     std::cerr << "Unknown command: " << command << std::endl;
