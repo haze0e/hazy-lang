@@ -1,5 +1,6 @@
 #include "scanner.hpp"
 #include "tokens.hpp"
+#include "Parser.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -27,6 +28,26 @@ int main(int argc, char *argv[]) {
     print_tokens(my_tokens);
     if (scanner.has_error()) {
       return 65;
+    }
+  } else if (command == "parse") {
+    std::string file_contents = read_file_contents(argv[2]);
+    Scanner scanner(file_contents);
+    scanner.scan_tokens();
+    std::vector<token> my_tokens = scanner.get_tokens();
+    
+    if (scanner.has_error()) {
+      return 65; // Stop if scanner failed
+    }
+
+    Parser parser(my_tokens);
+    std::unique_ptr<Expr> expr = parser.parse();
+
+    if (parser.has_error()) {
+      return 65;
+    }
+
+    if (expr) {
+      std::cout << expr->toString() << std::endl;
     }
   } else {
     std::cerr << "Unknown command: " << command << std::endl;

@@ -136,7 +136,6 @@ void Scanner::scan_tokens() {
           i++;
         }
         std::string lexeme = source.substr(start, i - start + 1);
-
         auto it = keywords.find(lexeme);
         if (it != keywords.end()) {
           make_token(it->second, lexeme);
