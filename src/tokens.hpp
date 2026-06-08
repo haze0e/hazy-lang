@@ -33,6 +33,10 @@ enum class type {
 
   SLASH,
 
+  // string
+
+  STRING,
+
 };
 
 std::string inline to_string(type s) {
@@ -77,6 +81,8 @@ std::string inline to_string(type s) {
     return "GREATER_EQUAL";
   case type::SLASH:
     return "SLASH";
+  case type::STRING:
+    return "STRING";
   default:
     return "UNKNOWN";
   }
@@ -95,27 +101,18 @@ public:
 
 void inline print_tokens(const std::vector<token> &tokens) {
   for (int i = 0; i < tokens.size(); i++) {
-
-    if (!(tokens[i].token_type == type::UNKNOWN)) {
-      std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme
-                << " ";
-      if (tokens[i].literal.has_value()) {
-        if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
-          std::cout << *str_val << std::endl;
-        } else if (auto double_val =
-                       std::any_cast<double>(&tokens[i].literal)) {
-          std::cout << *double_val << std::endl;
-        } else {
-          std::cout << "unknown" << std::endl;
-        }
+    std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme << " ";
+    
+    if (tokens[i].literal.has_value()) {
+      if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
+        std::cout << *str_val << std::endl;
+      } else if (auto double_val = std::any_cast<double>(&tokens[i].literal)) {
+        std::cout << *double_val << std::endl;
       } else {
-        std::cout << "null" << std::endl;
+        std::cout << "unknown" << std::endl;
       }
-      // some operation
     } else {
-      std::cerr << "[line " << tokens[i].line
-                << "] Error: Unexpected character: " << tokens[i].lexeme
-                << std::endl;
+      std::cout << "null" << std::endl;
     }
   }
 }

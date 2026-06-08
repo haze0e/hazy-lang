@@ -1,5 +1,6 @@
 #include "tokens.hpp"
 #include <vector>
+#pragma once
 
 class Scanner {
 private:
@@ -17,6 +18,7 @@ public:
   Scanner(std::string source_code) : source(std::move(source_code)) {}
 
   void scan_tokens();
+  void error(std::string message);
 
   const std::vector<token> &get_tokens() const { return tokens; }
 

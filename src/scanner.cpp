@@ -88,11 +88,37 @@ void Scanner::scan_tokens() {
         make_token(type::SLASH, source.substr(i, 1));
       }
       break;
+
+    case '"': {
+      int start = i;
+      while (i + 1 < source.length() && source[i + 1] != '"') {
+        if (source[i + 1] == '\n') {
+          line++;
+        }
+        i++;
+      }
+
+      if (i + 1 >= source.length()) {
+        have_error = true;
+        error("Unterminated string.");
+      } else {
+        i++;
+        std::string lexeme = source.substr(start, i - start + 1);
+        std::string literal = lexeme.substr(1, lexeme.length() - 2);
+        make_token(type::STRING, lexeme, literal);
+      }
+      break;
+    }
+
     default:
       have_error = true;
-      make_token(type::UNKNOWN, std::string(1, source[i]));
+      error("Unexpected character: " + std::string(1, source[i]));
       break;
     }
   }
   make_token(type::END_OF_FILE, "");
+}
+
+void Scanner::error(std::string message) {
+  std::cerr << "[line " << line << "] Error: " << message << std::endl;
 }
