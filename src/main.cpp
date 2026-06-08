@@ -13,6 +13,13 @@ enum class type {
   RIGHT_PAREN,
   LEFT_BRACE,
   RIGHT_BRACE,
+  STAR,
+  DOT,
+  COMMA,
+  MINUS,
+  PLUS,
+  SEMICOLON,
+
 };
 
 std::string to_string(type s) {
@@ -27,6 +34,18 @@ std::string to_string(type s) {
     return "LEFT_BRACE";
   case type::RIGHT_BRACE:
     return "RIGHT_BRACE";
+  case type::STAR:
+    return "STAR";
+  case type::DOT:
+    return "DOT";
+  case type::COMMA:
+    return "COMMA";
+  case type::MINUS:
+    return "MINUS";
+  case type::PLUS:
+    return "PLUS";
+  case type::SEMICOLON:
+    return "SEMICOLON";
   default:
     return "UNKNOWN";
   }
@@ -79,6 +98,24 @@ int main(int argc, char *argv[]) {
         break;
       case '{':
         tokens.push_back(token(type::LEFT_BRACE, "{"));
+        break;
+      case '*':
+        tokens.push_back(token(type::STAR, "*"));
+        break;
+      case '.':
+        tokens.push_back(token(type::DOT, "."));
+        break;
+      case ',':
+        tokens.push_back(token(type::COMMA, ","));
+        break;
+      case '-':
+        tokens.push_back(token(type::MINUS, "-"));
+        break;
+      case '+':
+        tokens.push_back(token(type::PLUS, "+"));
+        break;
+      case ';':
+        tokens.push_back(token(type::SEMICOLON, ";"));
         break;
       default:
         break;
