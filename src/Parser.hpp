@@ -6,6 +6,19 @@
 #include <stdexcept>
 #include <vector>
 
+// grammar rules
+/*
+expression     → equality ;
+equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term           → factor ( ( "-" | "+" ) factor )* ;
+factor         → unary ( ( "/" | "*" ) unary )* ;
+unary          → ( "!" | "-" ) unary
+               | primary ;
+primary        → NUMBER | STRING | "true" | "false" | "nil"
+               | "(" expression ")" ;
+*/
+
 class Parser {
 private:
   const std::vector<token> tokens;
@@ -28,7 +41,8 @@ private:
 
   std::unique_ptr<Expr> comparison() {
     std::unique_ptr<Expr> expr = term();
-    while (match(type::GREATER, type::GREATER_EQUAL, type::LESS, type::LESS_EQUAL)) {
+    while (match(type::GREATER, type::GREATER_EQUAL, type::LESS,
+                 type::LESS_EQUAL)) {
       token op = previous();
       std::unique_ptr<Expr> right = term();
       expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
@@ -125,9 +139,11 @@ private:
   std::runtime_error error(const token &tok, const std::string &message) {
     had_error = true;
     if (tok.token_type == type::END_OF_FILE) {
-      std::cerr << "[line " << tok.line << "] Error at end: " << message << std::endl;
+      std::cerr << "[line " << tok.line << "] Error at end: " << message
+                << std::endl;
     } else {
-      std::cerr << "[line " << tok.line << "] Error at '" << tok.lexeme << "': " << message << std::endl;
+      std::cerr << "[line " << tok.line << "] Error at '" << tok.lexeme
+                << "': " << message << std::endl;
     }
     return std::runtime_error(message);
   }

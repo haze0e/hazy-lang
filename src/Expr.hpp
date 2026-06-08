@@ -2,8 +2,22 @@
 #include "tokens.hpp"
 #include <any>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <utility>
+
+// grammar rules
+/*
+expression     → equality ;
+equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term           → factor ( ( "-" | "+" ) factor )* ;
+factor         → unary ( ( "/" | "*" ) unary )* ;
+unary          → ( "!" | "-" ) unary
+               | primary ;
+primary        → NUMBER | STRING | "true" | "false" | "nil"
+               | "(" expression ")" ;
+*/
 
 class Binary;
 class Grouping;
@@ -25,6 +39,7 @@ public:
   virtual std::any accept(ExprVisitor &visitor) const = 0;
 
   virtual std::string toString() const = 0;
+  virtual std::any evaluate() const = 0;
 };
 
 class Binary : public Expr {
@@ -44,6 +59,53 @@ public:
     return "(" + op.lexeme + " " + left->toString() + " " + right->toString() +
            ")";
   }
+
+  std::any evaluate() const override {
+    std::any left_val = left->evaluate();
+    std::any right_val = right->evaluate();
+
+    auto isEqual = [](const std::any& a, const std::any& b) {
+      if (!a.has_value() && !b.has_value()) return true;
+      if (!a.has_value() || !b.has_value()) return false;
+      if (a.type() != b.type()) return false;
+      if (a.type() == typeid(double)) return std::any_cast<double>(a) == std::any_cast<double>(b);
+      if (a.type() == typeid(std::string)) return std::any_cast<std::string>(a) == std::any_cast<std::string>(b);
+      if (a.type() == typeid(bool)) return std::any_cast<bool>(a) == std::any_cast<bool>(b);
+      return false;
+    };
+
+    switch (op.token_type) {
+      case type::MINUS:
+        return std::any_cast<double>(left_val) - std::any_cast<double>(right_val);
+      case type::SLASH:
+        return std::any_cast<double>(left_val) / std::any_cast<double>(right_val);
+      case type::STAR:
+        return std::any_cast<double>(left_val) * std::any_cast<double>(right_val);
+      case type::PLUS: {
+        if (left_val.type() == typeid(double) && right_val.type() == typeid(double)) {
+          return std::any_cast<double>(left_val) + std::any_cast<double>(right_val);
+        }
+        if (left_val.type() == typeid(std::string) && right_val.type() == typeid(std::string)) {
+          return std::any_cast<std::string>(left_val) + std::any_cast<std::string>(right_val);
+        }
+        throw std::runtime_error("Operands must be two numbers or two strings.");
+      }
+      case type::GREATER:
+        return std::any_cast<double>(left_val) > std::any_cast<double>(right_val);
+      case type::GREATER_EQUAL:
+        return std::any_cast<double>(left_val) >= std::any_cast<double>(right_val);
+      case type::LESS:
+        return std::any_cast<double>(left_val) < std::any_cast<double>(right_val);
+      case type::LESS_EQUAL:
+        return std::any_cast<double>(left_val) <= std::any_cast<double>(right_val);
+      case type::BANG_EQUAL:
+        return !isEqual(left_val, right_val);
+      case type::EQUAL_EQUAL:
+        return isEqual(left_val, right_val);
+      default:
+        return {};
+    }
+  }
 };
 
 class Grouping : public Expr {
@@ -59,6 +121,10 @@ public:
 
   std::string toString() const override {
     return "(group " + expression->toString() + ")";
+  }
+
+  std::any evaluate() const override {
+    return expression->evaluate();
   }
 };
 
@@ -91,6 +157,10 @@ public:
     }
     return "unknown";
   }
+
+  std::any evaluate() const override {
+    return value;
+  }
 };
 
 class Unary : public Expr {
@@ -107,5 +177,21 @@ public:
 
   std::string toString() const override {
     return "(" + op.lexeme + " " + right->toString() + ")";
+  }
+
+  std::any evaluate() const override {
+    std::any right_val = right->evaluate();
+
+    switch (op.token_type) {
+      case type::MINUS:
+        return -std::any_cast<double>(right_val);
+      case type::BANG: {
+        if (!right_val.has_value()) return true;
+        if (right_val.type() == typeid(bool)) return !std::any_cast<bool>(right_val);
+        return false;
+      }
+      default:
+        return {};
+    }
   }
 };

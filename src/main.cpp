@@ -1,6 +1,6 @@
+#include "Parser.hpp"
 #include "scanner.hpp"
 #include "tokens.hpp"
-#include "Parser.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -19,28 +19,25 @@ int main(int argc, char *argv[]) {
   }
 
   const std::string command = argv[1];
-
+  std::string file_contents = read_file_contents(argv[2]);
+  Scanner scanner(file_contents);
+  scanner.scan_tokens();
+  std::vector<token> my_tokens = scanner.get_tokens();
+  Parser parser(my_tokens);
+  std::unique_ptr<Expr> expr = parser.parse();
   if (command == "tokenize") {
-    std::string file_contents = read_file_contents(argv[2]);
-    Scanner scanner(file_contents);
-    scanner.scan_tokens();
-    std::vector<token> my_tokens = scanner.get_tokens();
+
     print_tokens(my_tokens);
     if (scanner.has_error()) {
       return 65;
     }
-  } else if (command == "parse") {
-    std::string file_contents = read_file_contents(argv[2]);
-    Scanner scanner(file_contents);
-    scanner.scan_tokens();
-    std::vector<token> my_tokens = scanner.get_tokens();
-    
+  }
+
+  else if (command == "parse") {
+
     if (scanner.has_error()) {
       return 65; // Stop if scanner failed
     }
-
-    Parser parser(my_tokens);
-    std::unique_ptr<Expr> expr = parser.parse();
 
     if (parser.has_error()) {
       return 65;
@@ -48,6 +45,20 @@ int main(int argc, char *argv[]) {
 
     if (expr) {
       std::cout << expr->toString() << std::endl;
+    }
+  } else if (command == "evaluate") {
+    std::any result = expr->evaluate();
+    if (!result.has_value()) {
+      std::cout << "nil" << std::endl;
+    } else if (result.type() == typeid(double)) {
+      std::cout << std::any_cast<double>(result) << std::endl;
+    } else if (result.type() == typeid(bool)) {
+      std::cout << (std::any_cast<bool>(result) ? "true" : "false")
+                << std::endl;
+    } else if (result.type() == typeid(std::string)) {
+      std::cout << std::any_cast<std::string>(result) << std::endl;
+    } else {
+      std::cout << "unknown type" << std::endl;
     }
   } else {
     std::cerr << "Unknown command: " << command << std::endl;
