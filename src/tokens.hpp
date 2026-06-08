@@ -1,4 +1,5 @@
 #include <any>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -118,8 +119,10 @@ void inline print_tokens(const std::vector<token> &tokens) {
         if (*double_val == (int)*double_val) {
           std::cout << *double_val << ".0" << std::endl;
         } else {
-
-          std::cout << *double_val << std::endl;
+          // Increase precision so C++ doesn't truncate long decimals
+          std::streamsize old_prec = std::cout.precision();
+          std::cout << std::setprecision(15) << *double_val
+                    << std::setprecision(old_prec) << std::endl;
         }
       } else {
         std::cout << "unknown" << std::endl;
