@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
     };
 
     std::vector<token> tokens;
+    bool have_error = 0;
 
     std::string file_contents = read_file_contents(argv[2]);
 
@@ -125,6 +126,7 @@ int main(int argc, char *argv[]) {
         line++;
         break;
       default:
+        have_error = 1;
         tokens.push_back(
             token(type::UNKNOWN, std::string(1, file_contents[i]), line));
         break;
@@ -151,10 +153,13 @@ int main(int argc, char *argv[]) {
         }
         // some operation
       } else {
-        std::cout << "[line " << tokens[i].line
+        std::cerr << "[line " << tokens[i].line
                   << "] Error: Unexpected character: " << tokens[i].lexeme
                   << std::endl;
       }
+    }
+    if (have_error) {
+      return 65;
     }
 
   } else {
