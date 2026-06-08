@@ -114,7 +114,13 @@ void inline print_tokens(const std::vector<token> &tokens) {
       if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
         std::cout << *str_val << std::endl;
       } else if (auto double_val = std::any_cast<double>(&tokens[i].literal)) {
-        std::cout << *double_val << std::endl;
+
+        if (*double_val == (int)*double_val) {
+          std::cout << *double_val << ".0" << std::endl;
+        } else {
+
+          std::cout << *double_val << std::endl;
+        }
       } else {
         std::cout << "unknown" << std::endl;
       }
