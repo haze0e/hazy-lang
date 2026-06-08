@@ -23,30 +23,32 @@ int main(int argc, char *argv[]) {
   Scanner scanner(file_contents);
   scanner.scan_tokens();
   std::vector<token> my_tokens = scanner.get_tokens();
-  Parser parser(my_tokens);
-  std::unique_ptr<Expr> expr = parser.parse();
   if (command == "tokenize") {
-
     print_tokens(my_tokens);
     if (scanner.has_error()) {
       return 65;
     }
+    return 0;
   }
 
-  else if (command == "parse") {
+  if (scanner.has_error()) {
+    return 65;
+  }
 
-    if (scanner.has_error()) {
-      return 65; // Stop if scanner failed
-    }
+  Parser parser(my_tokens);
+  std::unique_ptr<Expr> expr = parser.parse();
 
+  if (command == "parse") {
     if (parser.has_error()) {
       return 65;
     }
-
     if (expr) {
       std::cout << expr->toString() << std::endl;
     }
   } else if (command == "evaluate") {
+    if (parser.has_error()) {
+      return 65;
+    }
     std::any result = expr->evaluate();
     if (!result.has_value()) {
       std::cout << "nil" << std::endl;
