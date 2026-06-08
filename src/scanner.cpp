@@ -77,10 +77,14 @@ void Scanner::scan_tokens() {
 
     case '/':
       if (i + 1 < source.length() && source[i + 1] == '/') {
-        while (source[i] != '\n' && i < (source.size() - 1)) {
+        while (source[i] != '\n' && i < (source.size())) {
           i++;
         }
         i++;
+        if (source[i - 1] == '\n') {
+          line++;
+        }
+
       } else {
         make_token(type::SLASH, source.substr(i, 1));
       }
