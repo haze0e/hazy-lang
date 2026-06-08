@@ -74,6 +74,17 @@ void Scanner::scan_tokens() {
         make_token(type::GREATER, source.substr(i, 1));
       }
       break;
+
+    case '/':
+      if (i + 1 < source.length() && source[i + 1] == '/') {
+        while (source[i] != '\n' && i < (source.size() - 1)) {
+          i++;
+        }
+        i++;
+      } else {
+        make_token(type::SLASH, source.substr(i, 1));
+      }
+      break;
     default:
       have_error = true;
       make_token(type::UNKNOWN, std::string(1, source[i]));

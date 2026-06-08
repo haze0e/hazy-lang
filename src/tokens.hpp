@@ -29,6 +29,10 @@ enum class type {
   GREATER,
   GREATER_EQUAL,
 
+  // comments
+
+  SLASH,
+
 };
 
 std::string inline to_string(type s) {
@@ -71,6 +75,8 @@ std::string inline to_string(type s) {
     return "GREATER";
   case type::GREATER_EQUAL:
     return "GREATER_EQUAL";
+  case type::SLASH:
+    return "SLASH";
   default:
     return "UNKNOWN";
   }
