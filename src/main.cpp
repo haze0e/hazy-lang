@@ -78,8 +78,11 @@ int main(int argc, char *argv[]) {
       type token_type;
       std::string lexeme;
       std::any literal;
-      token(type token_type, std::string lexeme, std::any literal = std::any{})
-          : token_type(token_type), lexeme(lexeme), literal(literal) {}
+      long long line;
+      token(type token_type, std::string lexeme, long long line = 1,
+            std::any literal = std::any{})
+          : token_type(token_type), lexeme(lexeme), literal(literal),
+            line(line) {}
     };
 
     std::vector<token> tokens;
@@ -120,9 +123,10 @@ int main(int argc, char *argv[]) {
         break;
       case '\n':
         line++;
+        break;
       default:
         tokens.push_back(
-            token(type::UNKNOWN, std::string(file_contents[i], 1)));
+            token(type::UNKNOWN, std::string(1, file_contents[i]), line));
         break;
       }
       // some operation
@@ -147,7 +151,7 @@ int main(int argc, char *argv[]) {
         }
         // some operation
       } else {
-        std::cout << "[line " << line
+        std::cout << "[line " << tokens[i].line
                   << "] Error: Unexpected character: " << tokens[i].lexeme
                   << std::endl;
       }
