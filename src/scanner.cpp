@@ -80,8 +80,7 @@ void Scanner::scan_tokens() {
         while (source[i] != '\n' && i < (source.size())) {
           i++;
         }
-        i++;
-        if (source[i - 1] == '\n') {
+        if (source[i] == '\n') {
           line++;
         }
 
