@@ -33,7 +33,12 @@ public:
 
     switch (expr.op.token_type) {
     case type::MINUS:
-      return std::any_cast<double>(left_val) - std::any_cast<double>(right_val);
+      if (left_val.type() == typeid(double) &&
+          right_val.type() == typeid(double)) {
+        return std::any_cast<double>(left_val) -
+               std::any_cast<double>(right_val);
+      }
+      throw RuntimeError(expr.op, "Operands must be numbers.");
     case type::SLASH:
       if (left_val.type() == typeid(double) &&
           right_val.type() == typeid(double)) {
