@@ -98,7 +98,7 @@ private:
       return std::make_unique<Grouping>(std::move(expr));
     }
 
-    throw error(peek(), "Expect expression.");
+    // throw error(peek(), "Expect expression.");
   }
 
   token consume(type t, const std::string &message) {
