@@ -4,12 +4,15 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 enum class type {
   END_OF_FILE,
   LEFT_PAREN,
   RIGHT_PAREN,
+  LEFT_BRACE,
+  RIGHT_BRACE,
 };
 
 std::string to_string(type s) {
@@ -20,6 +23,10 @@ std::string to_string(type s) {
     return "LEFT_PAREN";
   case type::RIGHT_PAREN:
     return "RIGHT_PAREN";
+  case type::LEFT_BRACE:
+    return "LEFT_BRACE";
+  case type::RIGHT_BRACE:
+    return "RIGHT_BRACE";
   default:
     return "UNKNOWN";
   }
@@ -67,7 +74,12 @@ int main(int argc, char *argv[]) {
       case ')':
         tokens.push_back(token(type::RIGHT_PAREN, ")"));
         break;
-
+      case '}':
+        tokens.push_back(token(type::RIGHT_BRACE, "}"));
+        break;
+      case '{':
+        tokens.push_back(token(type::LEFT_BRACE, "{"));
+        break;
       default:
         break;
       }
