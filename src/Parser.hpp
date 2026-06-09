@@ -1,5 +1,7 @@
 #pragma once
 #include "Expr.hpp"
+// #include "statement.hpp"
+#include "statement.hpp"
 #include "tokens.hpp"
 #include <iostream>
 #include <memory>
@@ -24,6 +26,25 @@ private:
   const std::vector<token> tokens;
   int current = 0;
   bool had_error = false;
+
+  std::unique_ptr<Stmt> statement() {
+    if (match(type::PRINT)) {
+      return printStatement();
+    }
+    return ExpressionStatement();
+  }
+
+  std::unique_ptr<Stmt> printStatement() {
+    std::unique_ptr<Expr> value = expression();
+    consume(type::SEMICOLON, "Expect ';' after value.");
+    return std::make_unique<PrintStmt>(std::move(value));
+  }
+
+  std::unique_ptr<Stmt> ExpressionStatement() {
+    std::unique_ptr<Expr> value = expression();
+    consume(type::SEMICOLON, "Expect ';' after expression.");
+    return std::make_unique<ExpressionStmt>(std::move(value));
+  }
 
   std::unique_ptr<Expr> expression() { return equality(); }
 
@@ -176,12 +197,18 @@ private:
 public:
   Parser(const std::vector<token> &tokens) : tokens(tokens) {}
 
-  std::unique_ptr<Expr> parse() {
-    try {
-      return expression();
-    } catch (const std::runtime_error &) {
-      return nullptr;
+  std::vector<std::unique_ptr<Stmt>> parse() {
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!isAtEnd()) {
+      try {
+        statements.push_back(statement());
+      } catch (const std::runtime_error &) {
+        // If there's an error, synchronize so we can try to parse the NEXT
+        // statement
+        synchronize();
+      }
     }
+    return statements;
   }
 
   bool has_error() const { return had_error; }

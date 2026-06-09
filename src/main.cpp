@@ -37,33 +37,20 @@ int main(int argc, char *argv[]) {
   }
 
   Parser parser(my_tokens);
-  std::unique_ptr<Expr> expr = parser.parse();
-
+  std::vector<std::unique_ptr<Stmt>> statements = parser.parse();
+  if (parser.has_error()) {
+    return 65;
+  }
   if (command == "parse") {
-    if (parser.has_error()) {
-      return 65;
-    }
-    if (expr) {
-      std::cout << expr->toString() << std::endl;
-    }
+
   } else if (command == "evaluate") {
     if (parser.has_error()) {
       return 65;
     }
     Evaluator evaluator;
     try {
-      std::any result = expr->accept(evaluator);
-      if (!result.has_value()) {
-        std::cout << "nil" << std::endl;
-      } else if (result.type() == typeid(double)) {
-        std::cout << std::any_cast<double>(result) << std::endl;
-      } else if (result.type() == typeid(bool)) {
-        std::cout << (std::any_cast<bool>(result) ? "true" : "false")
-                  << std::endl;
-      } else if (result.type() == typeid(std::string)) {
-        std::cout << std::any_cast<std::string>(result) << std::endl;
-      } else {
-        std::cout << "unknown type" << std::endl;
+      for (const auto &stmt : statements) {
+        stmt->execute(evaluator);
       }
     } catch (const RuntimeError &e) {
       std::cerr << e.what() << "\n[line " << e.op.line << "]" << std::endl;
