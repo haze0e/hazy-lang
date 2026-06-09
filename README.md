@@ -12,6 +12,8 @@ Hazy Lang is currently in active development, featuring a fully functional tree-
 - **Dynamic Typing**: Native support for `double`, `bool`, `string`, and `nil` types.
 - **State & Variables**: Supports global variable declarations (`var x = 5;`) and environment memory management.
 - **Statements & Expressions**: Full support for complex mathematical operations, logical comparisons, and side-effects (e.g. `print` statements).
+- **Scoping**: Full support for scopes.
+
 
 ## 🛠 Architecture
 
@@ -54,6 +56,59 @@ Run it:
 ```bash
 ./build/interpreter run test.lox
 ```
+
+## 📝 Example Files
+
+```
+// Basic Math
+print 5 + 10 * 2;     // 25
+print (5 + 10) * 2;   // 30
+
+// Logic and Comparisons
+print 5 > 3 == true;  // true
+print 10 <= 5;        // false
+print !true == false; // true
+
+// String concatenation
+print "Hello " + "World!"; // Hello World!
+```
+
+```
+var greeting = "Welcome to Hazy Lang!";
+print greeting;
+
+var a = 10;
+var b = 25;
+var c = a + b;
+print "A + B is:";
+print c; // 35
+
+// Re-assigning variables
+a = a * 2;
+print "New A is:";
+print a; // 20
+```
+
+```
+var x = "global";
+{
+  var x = "outer";
+  print x; // "outer"
+  
+  {
+    var x = "inner";
+    print x; // "inner"
+    
+    // Changing a variable from the parent scope
+    var new_var = "created in inner";
+  }
+  
+  print x; // "outer" (The inner 'x' was destroyed!)
+}
+
+print x; // "global"
+```
+
 
 ---
 *Built with ❤️ in C++17.*
