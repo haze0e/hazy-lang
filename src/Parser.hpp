@@ -3,13 +3,27 @@
 // #include "statement.hpp"
 #include "statement.hpp"
 #include "tokens.hpp"
+#include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 // grammar rules
 /*
+
+program        → declaration* EOF ;
+
+declaration    → varDecl
+               | statement ;
+
+statement      → exprStmt
+               | printStmt ;
+
+
+
 expression     → equality ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -26,6 +40,23 @@ private:
   const std::vector<token> tokens;
   int current = 0;
   bool had_error = false;
+
+  std::unique_ptr<Stmt> declaration() {
+    if (match(type::VAR)) {
+      return VariableStatement();
+    }
+    return statement();
+  }
+
+  std::unique_ptr<Stmt> VariableStatement() {
+    token name = consume(type::IDENTIFIER, "Expect variable name.");
+    std::unique_ptr<Expr> initializer = nullptr;
+    if (match(type::EQUAL)) {
+      initializer = expression();
+    }
+    consume(type::SEMICOLON, "Expect ';' after variable declaration.");
+    return std::make_unique<VarStmt>(name, std::move(initializer));
+  }
 
   std::unique_ptr<Stmt> statement() {
     if (match(type::PRINT)) {
@@ -119,6 +150,10 @@ private:
       return std::make_unique<Grouping>(std::move(expr));
     }
 
+    if (match(type::IDENTIFIER)) {
+      return std::make_unique<VariableExpr>(previous());
+    }
+
     throw error(peek(), "Expect expression.");
   }
 
@@ -201,7 +236,7 @@ public:
     std::vector<std::unique_ptr<Stmt>> statements;
     while (!isAtEnd()) {
       try {
-        statements.push_back(statement());
+        statements.push_back(declaration());
       } catch (const std::runtime_error &) {
         // If there's an error, synchronize so we can try to parse the NEXT
         // statement

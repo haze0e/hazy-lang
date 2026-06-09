@@ -22,6 +22,7 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class VariableExpr;
 
 class ExprVisitor {
 public:
@@ -30,6 +31,7 @@ public:
   virtual std::any visitGroupingExpr(const Grouping &expr) = 0;
   virtual std::any visitLiteralExpr(const Literal &expr) = 0;
   virtual std::any visitUnaryExpr(const Unary &expr) = 0;
+  virtual std::any visitVariableExpr(const VariableExpr &expr) = 0;
 };
 
 class Expr {
@@ -104,6 +106,19 @@ public:
     }
     return "unknown";
   }
+};
+
+class VariableExpr : public Expr {
+public:
+  const token name;
+
+  VariableExpr(token name) : name(std::move(name)) {}
+
+  std::any accept(ExprVisitor &visitor) const override {
+    return visitor.visitVariableExpr(*this);
+  }
+
+  std::string toString() const override { return name.lexeme; }
 };
 
 class Unary : public Expr {

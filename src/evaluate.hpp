@@ -1,16 +1,14 @@
 #pragma once
 #include "Expr.hpp"
+#include "RuntimeError.hpp"
+#include "enviornment.hpp"
+#include <any>
 #include <stdexcept>
-
-class RuntimeError : public std::runtime_error {
-public:
-  const token op;
-  RuntimeError(const token &op, const std::string &message)
-      : std::runtime_error(message), op(op) {}
-};
 
 class Evaluator : public ExprVisitor {
 public:
+  Environment enviornment;
+
   std::any visitBinaryExpr(const Binary &expr) override {
     std::any left_val = expr.left->accept(*this);
     std::any right_val = expr.right->accept(*this);
@@ -129,5 +127,9 @@ public:
     default:
       return {};
     }
+  }
+
+  std::any visitVariableExpr(const VariableExpr &expr) override {
+    return enviornment.get(expr.name);
   }
 };
