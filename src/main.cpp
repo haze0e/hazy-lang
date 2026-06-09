@@ -42,7 +42,9 @@ int main(int argc, char *argv[]) {
     return 65;
   }
   if (command == "parse") {
-
+    for (const auto &stmt : statements) {
+      std::cout << stmt->toString() << std::endl;
+    }
   } else if (command == "evaluate") {
     if (parser.has_error()) {
       return 65;

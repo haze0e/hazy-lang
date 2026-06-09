@@ -8,6 +8,7 @@ class Stmt {
 public:
   virtual ~Stmt() = default;
   virtual void execute(Evaluator &evaluator) const = 0;
+  virtual std::string toString() const = 0;
 };
 
 class PrintStmt : public Stmt {
@@ -33,6 +34,10 @@ public:
       std::cout << "unknown type" << std::endl;
     }
   }
+
+  std::string toString() const override {
+    return "(print " + expression->toString() + ")";
+  }
 };
 
 class ExpressionStmt : public Stmt {
@@ -45,4 +50,6 @@ public:
   void execute(Evaluator &evaluator) const override {
     expression->accept(evaluator);
   }
+
+  std::string toString() const override { return expression->toString(); }
 };
