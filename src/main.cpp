@@ -69,6 +69,7 @@ int main(int argc, char *argv[]) {
     }
   } else if (command == "run") {
     std::vector<std::unique_ptr<Stmt>> statements = parser.parse();
+
     if (parser.has_error()) {
       return 65;
     }

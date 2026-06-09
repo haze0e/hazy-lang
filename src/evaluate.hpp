@@ -8,7 +8,7 @@
 
 class Evaluator : public ExprVisitor {
 public:
-  std::shared_ptr<Environment> enviornment;
+  std::shared_ptr<Environment> enviornment = std::make_shared<Environment>();
 
   std::any visitBinaryExpr(const Binary &expr) override {
     std::any left_val = expr.left->accept(*this);
