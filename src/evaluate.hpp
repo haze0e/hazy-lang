@@ -3,11 +3,12 @@
 #include "RuntimeError.hpp"
 #include "enviornment.hpp"
 #include <any>
+#include <memory>
 #include <stdexcept>
 
 class Evaluator : public ExprVisitor {
 public:
-  Environment enviornment;
+  std::shared_ptr<Environment> enviornment;
 
   std::any visitBinaryExpr(const Binary &expr) override {
     std::any left_val = expr.left->accept(*this);
@@ -130,13 +131,13 @@ public:
   }
 
   std::any visitVariableExpr(const VariableExpr &expr) override {
-    return enviornment.get(expr.name);
+    return enviornment->get(expr.name);
   }
 
   std::any visitAssignExpr(const AssignExpr &expr) override {
     std::any value = expr.value->accept(*this);
 
-    enviornment.assign(expr.name, value);
+    enviornment->assign(expr.name, value);
 
     return value;
   }

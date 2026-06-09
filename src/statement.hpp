@@ -23,8 +23,7 @@ public:
     if (initializer != nullptr) {
       value = initializer->accept(evaluator);
     }
-    // ACTUALLY SAVE IT IN MEMORY!
-    evaluator.enviornment.define(name.lexeme, value);
+    evaluator.enviornment->define(name.lexeme, value);
   }
 
   std::string toString() const override {
@@ -60,6 +59,32 @@ public:
   std::string toString() const override {
     return "(print " + expression->toString() + ")";
   }
+};
+
+class BlockStmt : public Stmt {
+public:
+  const std::vector<std::unique_ptr<Stmt>> statements;
+  BlockStmt(std::vector<std::unique_ptr<Stmt>> statements)
+      : statements(std::move(statements)) {}
+
+  void execute(Evaluator &evaluator) const override {
+    std::shared_ptr<Environment> previous = evaluator.enviornment;
+
+    try {
+      evaluator.enviornment = std::make_shared<Environment>(previous);
+      for (const auto &stmt : statements) {
+        stmt->execute(evaluator);
+      }
+
+    } catch (...) {
+      evaluator.enviornment = previous;
+      throw;
+    }
+
+    evaluator.enviornment = previous;
+  }
+
+  std::string toString() const override { return "(block)"; }
 };
 
 class ExpressionStmt : public Stmt {

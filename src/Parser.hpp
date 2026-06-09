@@ -20,11 +20,12 @@ declaration    → varDecl
                | statement ;
 
 statement      → exprStmt
-               | printStmt ;
+               | printStmt
+               | block;
 
 
-
-expression     → equality ;
+expression     → assignemnt ;
+assignemnt     → equality | ("=" equality)* ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
@@ -62,7 +63,21 @@ private:
     if (match(type::PRINT)) {
       return printStatement();
     }
+
+    else if (match(type::LEFT_BRACE)) {
+      return blockStatement();
+    }
+
     return ExpressionStatement();
+  }
+
+  std::unique_ptr<Stmt> blockStatement() {
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!isAtEnd() && peek().token_type != type::RIGHT_BRACE) {
+      statements.push_back(declaration());
+    }
+    consume(type::RIGHT_BRACE, "Expect '}' after block.");
+    return std::make_unique<BlockStmt>(std::move(statements));
   }
 
   std::unique_ptr<Stmt> printStatement() {
