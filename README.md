@@ -1,50 +1,59 @@
-[![progress-banner](https://backend.codecrafters.io/progress/interpreter/59b69be6-c034-4551-bce4-526b207b54c4)](https://app.codecrafters.io/users/haze0e?r=2qF)
+# Hazy Lang
 
-This is a starting point for C++ solutions to the
-["Build your own Interpreter" Challenge](https://app.codecrafters.io/courses/interpreter/overview).
+An elegantly designed, dynamically typed scripting language interpreter written entirely from scratch in modern C++17.
 
-This challenge follows the book
-[Crafting Interpreters](https://craftinginterpreters.com/) by Robert Nystrom.
+## 🚀 Features
 
-In this challenge you'll build an interpreter for
-[Lox](https://craftinginterpreters.com/the-lox-language.html), a simple
-scripting language. Along the way, you'll learn about tokenization, ASTs,
-tree-walk interpreters and more.
+Hazy Lang is currently in active development, featuring a fully functional tree-walk interpreter architecture:
 
-Before starting this challenge, make sure you've read the "Welcome" part of the
-book that contains these chapters:
+- **Robust Lexical Scanner**: Converts source code into an easily parsable stream of tokens.
+- **Recursive Descent Parser**: A powerful, hand-written parser that builds an Abstract Syntax Tree (AST).
+- **Tree-Walk Evaluator**: Executes the AST directly with full support for runtime type checking.
+- **Dynamic Typing**: Native support for `double`, `bool`, `string`, and `nil` types.
+- **State & Variables**: Supports global variable declarations (`var x = 5;`) and environment memory management.
+- **Statements & Expressions**: Full support for complex mathematical operations, logical comparisons, and side-effects (e.g. `print` statements).
 
-- [Introduction](https://craftinginterpreters.com/introduction.html) (chapter 1)
-- [A Map of the Territory](https://craftinginterpreters.com/a-map-of-the-territory.html)
-  (chapter 2)
-- [The Lox Language](https://craftinginterpreters.com/the-lox-language.html)
-  (chapter 3)
+## 🛠 Architecture
 
-These chapters don't involve writing code, so they won't be covered in this
-challenge. This challenge will start from chapter 4,
-[Scanning](https://craftinginterpreters.com/scanning.html).
+Hazy Lang strictly separates the parsing and evaluation phases to ensure maximum extensibility:
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+1. **Scanning**: `scanner.cpp` reads raw text and groups characters into meaningful `token` objects.
+2. **Parsing**: `Parser.hpp` processes tokens left-to-right using recursive descent to enforce grammar rules and construct an object-oriented AST.
+3. **Evaluating**: `evaluate.hpp` relies on a clean `execute()` / `accept()` visitor-like architecture to traverse the AST, throwing `RuntimeError` objects when invalid operations occur.
 
-# Passing the first stage
+## ⚙️ Building Locally
 
-The entry point for your program is in `src/main.cpp`. Study and uncomment the
-relevant code, and then run the command below to execute the tests on our
-servers:
+Hazy Lang uses CMake for its build system.
 
-```sh
-codecrafters submit
+```bash
+# Clone the repository
+git clone https://github.com/haze0e/hazy-lang.git
+cd hazy-lang
+
+# Build using CMake
+cmake -B build
+cmake --build build
+
+# Run the interpreter!
+./build/interpreter evaluate test.lox
 ```
 
-Time to move on to the next stage!
+## 📝 Example Usage
 
-# Stage 2 & beyond
+Create a file named `test.lox`:
+```js
+var greeting = "Hello from Hazy Lang!";
+print greeting;
 
-Note: This section is for stages 2 and beyond.
+var a = 12;
+var b = 24;
+print a + b; // 36
+```
 
-1. Ensure you have `cmake` installed locally
-2. Run `./your_program.sh` to run your program, which is implemented in
-   `src/main.cpp`.
-3. Run `codecrafters submit` to submit your solution to CodeCrafters. Test
-   output will be streamed to your terminal.
+Run it:
+```bash
+./build/interpreter run test.lox
+```
+
+---
+*Built with ❤️ in C++17.*
