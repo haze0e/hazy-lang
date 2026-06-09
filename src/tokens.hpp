@@ -1,0 +1,198 @@
+#include <any>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#pragma once
+
+enum class type {
+  END_OF_FILE,
+  LEFT_PAREN,
+  RIGHT_PAREN,
+  LEFT_BRACE,
+  RIGHT_BRACE,
+  STAR,
+  DOT,
+  COMMA,
+  MINUS,
+  PLUS,
+  SEMICOLON,
+  UNKNOWN,
+
+  // double char tokens
+
+  BANG_EQUAL,
+  EQUAL,
+  EQUAL_EQUAL,
+  BANG,
+  LESS,
+  LESS_EQUAL,
+  GREATER,
+  GREATER_EQUAL,
+
+  // comments
+
+  SLASH,
+
+  // string
+
+  STRING,
+
+  // number
+
+  NUMBER,
+
+  // identifier
+
+  IDENTIFIER,
+
+  // keywords
+  AND,
+  CLASS,
+  ELSE,
+  FALSE,
+  FOR,
+  FUN,
+  IF,
+  NIL,
+  OR,
+  PRINT,
+  RETURN,
+  SUPER,
+  THIS,
+  TRUE,
+  VAR,
+  WHILE
+
+};
+
+inline std::unordered_map<std::string, type> keywords = {
+    {"and", type::AND},     {"class", type::CLASS},   {"else", type::ELSE},
+    {"false", type::FALSE}, {"for", type::FOR},       {"fun", type::FUN},
+    {"if", type::IF},       {"nil", type::NIL},       {"or", type::OR},
+    {"print", type::PRINT}, {"return", type::RETURN}, {"super", type::SUPER},
+    {"this", type::THIS},   {"true", type::TRUE},     {"var", type::VAR},
+    {"while", type::WHILE}};
+
+std::string inline to_string(type s) {
+  switch (s) {
+  case type::END_OF_FILE:
+    return "EOF";
+  case type::LEFT_PAREN:
+    return "LEFT_PAREN";
+  case type::RIGHT_PAREN:
+    return "RIGHT_PAREN";
+  case type::LEFT_BRACE:
+    return "LEFT_BRACE";
+  case type::RIGHT_BRACE:
+    return "RIGHT_BRACE";
+  case type::STAR:
+    return "STAR";
+  case type::DOT:
+    return "DOT";
+  case type::COMMA:
+    return "COMMA";
+  case type::MINUS:
+    return "MINUS";
+  case type::PLUS:
+    return "PLUS";
+  case type::SEMICOLON:
+    return "SEMICOLON";
+  case type::BANG_EQUAL:
+    return "BANG_EQUAL";
+  case type::EQUAL:
+    return "EQUAL";
+  case type::EQUAL_EQUAL:
+    return "EQUAL_EQUAL";
+  case type::BANG:
+    return "BANG";
+  case type::LESS:
+    return "LESS";
+  case type::LESS_EQUAL:
+    return "LESS_EQUAL";
+  case type::GREATER:
+    return "GREATER";
+  case type::GREATER_EQUAL:
+    return "GREATER_EQUAL";
+  case type::SLASH:
+    return "SLASH";
+  case type::STRING:
+    return "STRING";
+  case type::NUMBER:
+    return "NUMBER";
+  case type::IDENTIFIER:
+    return "IDENTIFIER";
+  case type::AND:
+    return "AND";
+  case type::CLASS:
+    return "CLASS";
+  case type::ELSE:
+    return "ELSE";
+  case type::FALSE:
+    return "FALSE";
+  case type::FOR:
+    return "FOR";
+  case type::FUN:
+    return "FUN";
+  case type::IF:
+    return "IF";
+  case type::NIL:
+    return "NIL";
+  case type::OR:
+    return "OR";
+  case type::PRINT:
+    return "PRINT";
+  case type::RETURN:
+    return "RETURN";
+  case type::SUPER:
+    return "SUPER";
+  case type::THIS:
+    return "THIS";
+  case type::TRUE:
+    return "TRUE";
+  case type::VAR:
+    return "VAR";
+  case type::WHILE:
+    return "WHILE";
+  default:
+    return "UNKNOWN";
+  }
+}
+
+class token {
+public:
+  type token_type;
+  std::string lexeme;
+  std::any literal;
+  long long line;
+  token(type token_type, std::string lexeme, long long line,
+        std::any literal = std::any{})
+      : token_type(token_type), lexeme(lexeme), literal(literal), line(line) {}
+};
+
+void inline print_tokens(const std::vector<token> &tokens) {
+  for (int i = 0; i < tokens.size(); i++) {
+    std::cout << to_string(tokens[i].token_type) + " " << tokens[i].lexeme
+              << " ";
+
+    if (tokens[i].literal.has_value()) {
+      if (auto str_val = std::any_cast<std::string>(&tokens[i].literal)) {
+        std::cout << *str_val << std::endl;
+      } else if (auto double_val = std::any_cast<double>(&tokens[i].literal)) {
+
+        if (*double_val == (int)*double_val) {
+          std::cout << *double_val << ".0" << std::endl;
+        } else {
+          std::streamsize old_prec = std::cout.precision();
+          std::cout << std::setprecision(15) << *double_val
+                    << std::setprecision(old_prec) << std::endl;
+        }
+      } else {
+        std::cout << "unknown" << std::endl;
+      }
+    } else {
+      std::cout << "null" << std::endl;
+    }
+  }
+}
