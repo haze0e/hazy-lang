@@ -19,4 +19,12 @@ public:
 
     throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
   }
+
+  void assign(const token &name, std::any value) {
+    if (values.find(name.lexeme) != values.end()) {
+      values[name.lexeme] = value;
+      return;
+    }
+    throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+  }
 };

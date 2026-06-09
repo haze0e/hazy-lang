@@ -132,4 +132,12 @@ public:
   std::any visitVariableExpr(const VariableExpr &expr) override {
     return enviornment.get(expr.name);
   }
+
+  std::any visitAssignExpr(const AssignExpr &expr) override {
+    std::any value = expr.value->accept(*this);
+
+    enviornment.assign(expr.name, value);
+
+    return value;
+  }
 };

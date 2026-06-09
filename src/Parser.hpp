@@ -77,7 +77,24 @@ private:
     return std::make_unique<ExpressionStmt>(std::move(value));
   }
 
-  std::unique_ptr<Expr> expression() { return equality(); }
+  std::unique_ptr<Expr> expression() { return assignment(); }
+
+  std::unique_ptr<Expr> assignment() {
+    std::unique_ptr<Expr> expr = equality();
+
+    if (match(type::EQUAL)) {
+      token equals = previous();
+      std::unique_ptr<Expr> value = assignment();
+
+      if (VariableExpr *v = dynamic_cast<VariableExpr *>(expr.get())) {
+        return std::make_unique<AssignExpr>(v->name, std::move(value));
+      }
+
+      error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
+  }
 
   std::unique_ptr<Expr> equality() {
     std::unique_ptr<Expr> expr = comparison();

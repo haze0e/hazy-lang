@@ -23,6 +23,7 @@ class Grouping;
 class Literal;
 class Unary;
 class VariableExpr;
+class AssignExpr;
 
 class ExprVisitor {
 public:
@@ -32,6 +33,7 @@ public:
   virtual std::any visitLiteralExpr(const Literal &expr) = 0;
   virtual std::any visitUnaryExpr(const Unary &expr) = 0;
   virtual std::any visitVariableExpr(const VariableExpr &expr) = 0;
+  virtual std::any visitAssignExpr(const AssignExpr &expr) = 0;
 };
 
 class Expr {
@@ -119,6 +121,23 @@ public:
   }
 
   std::string toString() const override { return name.lexeme; }
+};
+
+class AssignExpr : public Expr {
+public:
+  const token name;
+  const std::unique_ptr<Expr> value;
+
+  AssignExpr(token name, std::unique_ptr<Expr> value)
+      : name(std::move(name)), value(std::move(value)) {}
+
+  std::any accept(ExprVisitor &visitor) const override {
+    return visitor.visitAssignExpr(*this);
+  }
+
+  std::string toString() const override {
+    return "(assign " + name.lexeme + " " + value->toString() + ")";
+  }
 };
 
 class Unary : public Expr {
