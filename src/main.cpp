@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     for (const auto &stmt : statements) {
       std::cout << stmt->toString() << std::endl;
     }
-  } else if (command == "evaluate") {
+  } else if (command == "run") {
     if (parser.has_error()) {
       return 65;
     }
