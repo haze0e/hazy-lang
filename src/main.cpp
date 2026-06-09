@@ -37,18 +37,42 @@ int main(int argc, char *argv[]) {
   }
 
   Parser parser(my_tokens);
-  std::vector<std::unique_ptr<Stmt>> statements = parser.parse();
-  if (parser.has_error()) {
-    return 65;
-  }
-  if (command == "parse") {
-    for (const auto &stmt : statements) {
-      std::cout << stmt->toString() << std::endl;
-    }
-  } else if (command == "run") {
+
+  if (command == "parse" || command == "evaluate") {
+    std::unique_ptr<Expr> expr = parser.parse_expression();
     if (parser.has_error()) {
       return 65;
     }
+
+    if (command == "parse") {
+      std::cout << expr->toString() << std::endl;
+    } else {
+      Evaluator evaluator;
+      try {
+        std::any result = expr->accept(evaluator);
+        if (!result.has_value()) {
+          std::cout << "nil" << std::endl;
+        } else if (result.type() == typeid(double)) {
+          std::cout << std::any_cast<double>(result) << std::endl;
+        } else if (result.type() == typeid(bool)) {
+          std::cout << (std::any_cast<bool>(result) ? "true" : "false")
+                    << std::endl;
+        } else if (result.type() == typeid(std::string)) {
+          std::cout << std::any_cast<std::string>(result) << std::endl;
+        } else {
+          std::cout << "unknown type" << std::endl;
+        }
+      } catch (const RuntimeError &e) {
+        std::cerr << e.what() << "\n[line " << e.op.line << "]" << std::endl;
+        return 70;
+      }
+    }
+  } else if (command == "run") {
+    std::vector<std::unique_ptr<Stmt>> statements = parser.parse();
+    if (parser.has_error()) {
+      return 65;
+    }
+
     Evaluator evaluator;
     try {
       for (const auto &stmt : statements) {

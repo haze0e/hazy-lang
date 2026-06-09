@@ -211,5 +211,13 @@ public:
     return statements;
   }
 
+  std::unique_ptr<Expr> parse_expression() {
+    try {
+      return expression();
+    } catch (const std::runtime_error &) {
+      return nullptr;
+    }
+  }
+
   bool has_error() const { return had_error; }
 };
