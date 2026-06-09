@@ -38,6 +38,7 @@ public:
 
     if (parent != nullptr) {
       parent->assign(name, value);
+      return;
     }
 
     throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
